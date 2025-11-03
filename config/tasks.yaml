@@ -1,0 +1,20 @@
+apps:
+  - name: Linear
+    url: "https://linear.app"
+    workflows:
+      - name: create_project
+        description: "Test workflow to open Linear website and capture basic UI states."
+        steps:
+          - open_homepage
+          - wait_for_load
+          - capture_landing_page
+
+  - name: Notion
+    url: "https://www.notion.so"
+    workflows:
+      - name: open_dashboard
+        description: "Open Notion homepage and capture initial UI."
+        steps:
+          - open_homepage
+          - wait_for_load
+          - capture_dashboard
