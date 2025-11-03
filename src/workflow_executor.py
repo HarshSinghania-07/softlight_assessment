@@ -28,28 +28,43 @@ class WorkflowExecutor:
         capturer = StateCapturer(f"datasets/{app_name}/{workflow_name}")
         steps = workflow["steps"]
 
-        # Step 1: Open the base URL before beginning
         if base_url:
             logger.info(f"Navigating to base URL: {base_url}")
             self.page.goto(base_url, wait_until="load")
             capturer.capture(self.page, "initial_load", f"Opened {base_url}")
 
-        # Step 2: Iterate through defined steps
         for step in steps:
             logger.info(f"Executing step: {step}")
 
-            # Define basic step logic (extend later)
             if step == "wait_for_load":
                 self.page.wait_for_timeout(2000)
+
+            elif step == "open_homepage":
+                self.page.goto(base_url, wait_until="load")
+                self.page.wait_for_timeout(1500)
+
+            elif step == "click_login":
+                logger.debug("Clicking on 'Log in' button (Linear)...")
+                self.page.click("text='Log in'")
+                self.page.wait_for_timeout(2000)
+
+            elif step == "click_product":
+                logger.debug("Navigating to Product page (Linear)...")
+                self.page.click("text='Product'")
+                self.page.wait_for_load_state("load")
+                self.page.wait_for_timeout(1500)
+
+            elif step == "click_pricing":
+                logger.debug("Clicking on 'Pricing' section (Notion)...")
+                self.page.click("text='Pricing'")
+                self.page.wait_for_timeout(2000)
+
             elif step.startswith("capture_"):
-                # Capture UI after specific step
                 self.detector.detect_state_change()
                 capturer.capture(self.page, step, f"Captured UI for {step}")
-            elif step == "open_homepage":
-                # Optional redundancy, ensure URL is loaded
-                self.page.goto(base_url, wait_until="load")
-            else:
-                # Placeholder for any other step action
-                self.page.wait_for_timeout(1000)
 
+            else:
+                logger.warning(f"Unknown step: {step}. Waiting briefly.")
+                self.page.wait_for_timeout(1000)
         capturer.save_metadata()
+        logger.info(f"Workflow '{workflow_name}' completed successfully.")

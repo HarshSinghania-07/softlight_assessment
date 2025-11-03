@@ -2,19 +2,34 @@ apps:
   - name: Linear
     url: "https://linear.app"
     workflows:
-      - name: create_project
-        description: "Test workflow to open Linear website and capture basic UI states."
+      - name: view_landing
         steps:
           - open_homepage
           - wait_for_load
           - capture_landing_page
 
+      - name: open_login_modal
+        steps:
+          - open_homepage
+          - click_login
+          - capture_login_modal
+
+      - name: explore_product_page
+        steps:
+          - open_homepage
+          - click_product
+          - capture_product_page
+
   - name: Notion
     url: "https://www.notion.so"
     workflows:
-      - name: open_dashboard
-        description: "Open Notion homepage and capture initial UI."
+      - name: capture_homepage
         steps:
           - open_homepage
-          - wait_for_load
           - capture_dashboard
+
+      - name: explore_pricing_modal
+        steps:
+          - open_homepage
+          - click_pricing
+          - capture_pricing_modal
