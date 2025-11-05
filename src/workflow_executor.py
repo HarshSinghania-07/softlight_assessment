@@ -1,7 +1,6 @@
 """
 Executes workflow steps defined in configuration.
 """
-
 from loguru import logger
 from src.state_detector import StateDetector
 from src.state_capturer import StateCapturer
@@ -10,7 +9,6 @@ class WorkflowExecutor:
     """
     Coordinates the execution of workflow actions and state capture.
     """
-
     def __init__(self, page, config):
         self.page = page
         self.config = config
@@ -31,8 +29,10 @@ class WorkflowExecutor:
         if base_url:
             logger.info(f"Navigating to base URL: {base_url}")
             self.page.goto(base_url, wait_until="load")
-            self.page.wait_for_timeout(2000)
-            capturer.capture(self.page, "initial_load", f"Opened {base_url}")
+            extra_wait = 5000  
+            logger.debug(f"Waiting {extra_wait/1000}s for page assets to finish loading...")
+            self.page.wait_for_timeout(extra_wait)
+            capturer.capture(self.page, "initial_load", f"Opened {base_url} after stabilization delay")
 
         for step in steps:
             logger.info(f"Executing step: {step}")

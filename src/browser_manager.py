@@ -1,7 +1,6 @@
 """
 Handles browser initialization and teardown using Playwright.
 """
-
 from playwright.sync_api import sync_playwright
 from loguru import logger
 
@@ -9,7 +8,6 @@ class BrowserManager:
     """
     Responsible for launching and managing Playwright browser sessions.
     """
-    
     def __init__(self, headless: bool = False):
         self.headless = headless
         self.browser = None
@@ -20,7 +18,6 @@ class BrowserManager:
         """
         Launch the Playwright browser and open a new page context.
         """
-        
         logger.info("Launching Playwright browser...")
         playwright = sync_playwright().start()
         self.browser = playwright.chromium.launch(headless=self.headless)
@@ -33,7 +30,6 @@ class BrowserManager:
         """
         Close the browser and cleanup.
         """
-        
         if self.browser:
             logger.info("Closing browser...")
             self.browser.close()

@@ -2,7 +2,6 @@
 dataset_manager.py
 Manages dataset folder structure and organization.
 """
-
 import os
 from loguru import logger
 
@@ -10,7 +9,6 @@ class DatasetManager:
     """
     Creates and maintains dataset folders for screenshots and metadata.
     """
-
     def __init__(self, base_dir="datasets"):
         self.base_dir = base_dir
         os.makedirs(base_dir, exist_ok=True)

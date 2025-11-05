@@ -5,9 +5,10 @@
 #   make linear-view
 #   make linear-login
 #   make linear-scroll
+# 	make notion-home
 #   make notion-pricing
+# 	make notion-signup
 #   make test-all
-#   make clean
 
 PYTHON := python
 MAIN := main.py
@@ -23,14 +24,8 @@ linear-view:
 linear-login:
 	@$(ACTIVATE); $(PYTHON) $(MAIN) --app Linear --workflow open_login_modal
 
-linear-product:
-	@$(ACTIVATE); $(PYTHON) $(MAIN) --app Linear --workflow explore_product_page
-
 linear-scroll:
 	@$(ACTIVATE); $(PYTHON) $(MAIN) --app Linear --workflow scroll_features_section
-
-linear-hover:
-	@$(ACTIVATE); $(PYTHON) $(MAIN) --app Linear --workflow hover_resources_menu
 
 # -------------------------------------
 # Notion workflows
