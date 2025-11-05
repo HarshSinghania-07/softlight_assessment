@@ -2,13 +2,13 @@
  {
   "step": "initial_load",
   "description": "Opened https://linear.app after stabilization delay",
-  "timestamp": "20251105_120518",
-  "file_path": "datasets/Linear/open_login_modal/initial_load_20251105_120518.png"
+  "timestamp": "20251105_175249",
+  "file_path": "datasets/Linear/open_login_modal/initial_load_20251105_175249.png"
  },
  {
   "step": "capture_login_modal",
   "description": "Captured UI for capture_login_modal",
-  "timestamp": "20251105_120522",
-  "file_path": "datasets/Linear/open_login_modal/capture_login_modal_20251105_120522.png"
+  "timestamp": "20251105_175254",
+  "file_path": "datasets/Linear/open_login_modal/capture_login_modal_20251105_175254.png"
  }
 ]

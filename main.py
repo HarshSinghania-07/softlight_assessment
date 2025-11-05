@@ -1,40 +1,85 @@
 """
-main.py
-Entry point for the UI State Capture agent.
+Entry point for the Autonomous UI State Capture System (Agent B)
 """
 
-from src.browser_manager import BrowserManager
-from src.config_loader import ConfigLoader
-from src.workflow_executor import WorkflowExecutor
-from src.dataset_manager import DatasetManager
-from loguru import logger
 import argparse
+from loguru import logger
+from src.config_loader import ConfigLoader
+from src.browser_manager import BrowserManager
+from src.workflow_executor import WorkflowExecutor
+from src.task_interpreter import TaskInterpreter
 
-def main(app: str, workflow: str):
+def main():
+    parser = argparse.ArgumentParser(description="Autonomous UI State Capture System")
+    parser.add_argument("--app", type=str, help="Name of the app (e.g., Linear, Notion)")
+    parser.add_argument("--workflow", type=str, help="Workflow name from YAML config")
+    parser.add_argument("--query", type=str, help="Natural language query from Agent A")
+    args = parser.parse_args()
+
     logger.info("=== Starting UI State Capture System ===")
 
     # Load configuration
-    config = ConfigLoader("config/tasks.yaml").load_config()
-
-    # Initialize dataset structure
-    DatasetManager().create_app_folder(app)
+    try:
+        loader = ConfigLoader("config/tasks.yaml")
+        config = loader.load_config()
+        logger.info("Configuration loaded successfully.")
+    except Exception as e:
+        logger.error(f"Failed to load configuration: {e}")
+        return
 
     # Launch browser
-    browser_mgr = BrowserManager(headless=False)
-    page = browser_mgr.launch_browser()
+    browser_manager = BrowserManager()
+    page = browser_manager.launch_browser() 
 
-    # Execute workflow
+    # Initialize workflow executor
     executor = WorkflowExecutor(page, config)
-    executor.run_workflow(app, workflow)
 
-    # Close browser
-    browser_mgr.close_browser()
+    # -------------------
+    # Dynamic Query Mode 
+    # -------------------
+    if args.query:
+        logger.info(f"Received dynamic query: {args.query}")
+        try:
+            interpreter = TaskInterpreter()
+            app_name, dynamic_workflow = interpreter.interpret(args.query)
+            executor.run_dynamic_workflow(app_name, dynamic_workflow)
+        except Exception as e:
+            logger.error(f"Error interpreting query: {e}")
+
+    # ---------------------
+    # Predefined YAML Mode 
+    # ---------------------
+    else:
+        # If app/workflow not provided
+        if not args.app or not args.workflow:
+            print("\n No app or workflow provided. Let's choose one interactively!")
+            print("Available apps:")
+            for app in config["apps"]:
+                print(f" - {app['name']}")
+            app_choice = input("\nEnter the app name: ").strip()
+
+            selected_app = next((app for app in config["apps"] if app["name"].lower() == app_choice.lower()), None)
+            if not selected_app:
+                logger.error(f"App '{app_choice}' not found in config.")
+                browser_manager.close_browser(browser)
+                return
+
+            print(f"\nAvailable workflows for {selected_app['name']}:")
+            for wf in selected_app["workflows"]:
+                print(f" - {wf['name']}")
+            workflow_choice = input("\nEnter the workflow name: ").strip()
+
+            args.app = selected_app["name"]
+            args.workflow = workflow_choice
+
+        try:
+            logger.info(f"Running predefined workflow: {args.workflow} for {args.app}")
+            executor.run_workflow(args.app, args.workflow)
+        except Exception as e:
+            logger.error(f"Error executing workflow: {e}")
+
+    browser_manager.close_browser()
     logger.info("=== Workflow execution completed ===")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--app", required=True, help="Application name (e.g., Linear)")
-    parser.add_argument("--workflow", required=True, help="Workflow name (e.g., create_project)")
-    args = parser.parse_args()
-
-    main(args.app, args.workflow)
+    main()

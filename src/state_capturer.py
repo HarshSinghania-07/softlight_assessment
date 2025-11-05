@@ -18,6 +18,7 @@ class StateCapturer:
         """
         Takes a screenshot and records metadata
         """
+        page.wait_for_timeout(1500)
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         file_path = os.path.join(self.dataset_path, f"{step_name}_{timestamp}.png")
         

@@ -1,14 +1,14 @@
 [
  {
   "step": "initial_load",
-  "description": "Opened https://www.notion.so",
-  "timestamp": "20251105_113851",
-  "file_path": "datasets/Notion/explore_pricing_modal/initial_load_20251105_113851.png"
+  "description": "Opened https://www.notion.so after stabilization delay",
+  "timestamp": "20251105_153401",
+  "file_path": "datasets/Notion/explore_pricing_modal/initial_load_20251105_153401.png"
  },
  {
   "step": "capture_pricing_modal",
   "description": "Captured UI for capture_pricing_modal",
-  "timestamp": "20251105_113856",
-  "file_path": "datasets/Notion/explore_pricing_modal/capture_pricing_modal_20251105_113856.png"
+  "timestamp": "20251105_153405",
+  "file_path": "datasets/Notion/explore_pricing_modal/capture_pricing_modal_20251105_153405.png"
  }
 ]

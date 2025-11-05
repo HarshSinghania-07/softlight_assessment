@@ -86,3 +86,20 @@ class WorkflowExecutor:
                 self.page.wait_for_timeout(1000)
         capturer.save_metadata()
         logger.info(f"Workflow '{workflow_name}' completed successfully.")
+    def run_dynamic_workflow(self, app_name, workflow):
+        """
+        Executes a workflow dynamically generated at runtime.
+        """
+        logger.info(f"Running dynamic workflow: {workflow['name']} for {app_name}")
+        base_url = next(app["url"] for app in self.config["apps"] if app["name"] == app_name)
+        capturer = StateCapturer(f"datasets/{app_name}/{workflow['name']}")
+
+        self.page.goto(base_url, wait_until="load")
+        self.page.wait_for_timeout(5000)
+        capturer.capture(self.page, "initial_load", f"Opened {base_url}")
+
+        for step in workflow["steps"]:
+            logger.info(f"Executing step: {step}")
+            self.execute_step(app_name, step, capturer)
+
+        capturer.save_metadata()
