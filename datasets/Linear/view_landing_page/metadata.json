@@ -1,0 +1,14 @@
+[
+ {
+  "step": "initial_load",
+  "description": "Opened https://linear.app",
+  "timestamp": "20251105_113713",
+  "file_path": "datasets/Linear/view_landing_page/initial_load_20251105_113713.png"
+ },
+ {
+  "step": "capture_landing_page",
+  "description": "Captured UI for capture_landing_page",
+  "timestamp": "20251105_113717",
+  "file_path": "datasets/Linear/view_landing_page/capture_landing_page_20251105_113717.png"
+ }
+]

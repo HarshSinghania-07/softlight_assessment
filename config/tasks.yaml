@@ -2,34 +2,24 @@ apps:
   - name: Linear
     url: "https://linear.app"
     workflows:
-      - name: view_landing
-        steps:
-          - open_homepage
-          - wait_for_load
-          - capture_landing_page
-
+      - name: view_landing_page
+        steps: [open_homepage, wait_for_load, capture_landing_page]
       - name: open_login_modal
-        steps:
-          - open_homepage
-          - click_login
-          - capture_login_modal
-
+        steps: [open_homepage, click_login, capture_login_modal]
       - name: explore_product_page
-        steps:
-          - open_homepage
-          - click_product
-          - capture_product_page
+        steps: [open_homepage, click_product, capture_product_page]
+      - name: scroll_features_section
+        steps: [open_homepage, scroll_to_features, capture_features_section]
+      - name: hover_resources_menu
+        steps: [open_homepage, hover_resources, capture_dropdown]
 
   - name: Notion
     url: "https://www.notion.so"
     workflows:
       - name: capture_homepage
-        steps:
-          - open_homepage
-          - capture_dashboard
-
+        steps: [open_homepage, capture_dashboard]
       - name: explore_pricing_modal
+        steps: [open_homepage, click_pricing, capture_pricing_modal]
+      - name: simulate_signup_flow
         steps:
-          - open_homepage
-          - click_pricing
-          - capture_pricing_modal
+          [open_homepage, click_login, type_email_field, capture_form_state]

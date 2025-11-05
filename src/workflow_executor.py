@@ -31,6 +31,7 @@ class WorkflowExecutor:
         if base_url:
             logger.info(f"Navigating to base URL: {base_url}")
             self.page.goto(base_url, wait_until="load")
+            self.page.wait_for_timeout(2000)
             capturer.capture(self.page, "initial_load", f"Opened {base_url}")
 
         for step in steps:
@@ -44,20 +45,37 @@ class WorkflowExecutor:
                 self.page.wait_for_timeout(1500)
 
             elif step == "click_login":
-                logger.debug("Clicking on 'Log in' button (Linear)...")
-                self.page.click("text='Log in'")
+                logger.debug("Clicking 'Log in' on Linear...")
+                self.page.click("text='Log in'", timeout=5000)
                 self.page.wait_for_timeout(2000)
 
             elif step == "click_product":
-                logger.debug("Navigating to Product page (Linear)...")
-                self.page.click("text='Product'")
+                logger.debug("Clicking 'Product' on Linear...")
+                self.page.click("text='Product'", timeout=5000)
                 self.page.wait_for_load_state("load")
                 self.page.wait_for_timeout(1500)
 
+            elif step == "scroll_to_features":
+                logger.debug("Scrolling down to Features section...")
+                for i in range(3):
+                    self.page.mouse.wheel(0, 1000)
+                    self.page.wait_for_timeout(800)
+                self.page.wait_for_timeout(1000)
+
             elif step == "click_pricing":
-                logger.debug("Clicking on 'Pricing' section (Notion)...")
-                self.page.click("text='Pricing'")
+                logger.debug("Clicking 'Pricing' on Notion...")
+                self.page.click("text='Pricing'", timeout=5000)
                 self.page.wait_for_timeout(2000)
+
+            elif step == "type_email_field":
+                logger.debug("Typing into email field (Notion sign-up)...")
+                try:
+                    self.page.click("text='Log in'")
+                    self.page.wait_for_selector("input[type='email']", timeout=4000)
+                    self.page.fill("input[type='email']", "test@example.com")
+                    self.page.wait_for_timeout(1500)
+                except Exception as e:
+                    logger.warning(f"Could not find email input: {e}")
 
             elif step.startswith("capture_"):
                 self.detector.detect_state_change()
