@@ -6,12 +6,8 @@ apps:
         steps: [open_homepage, wait_for_load, capture_landing_page]
       - name: open_login_modal
         steps: [open_homepage, click_login, capture_login_modal]
-      - name: explore_product_page
-        steps: [open_homepage, click_product, capture_product_page]
       - name: scroll_features_section
         steps: [open_homepage, scroll_to_features, capture_features_section]
-      - name: hover_resources_menu
-        steps: [open_homepage, hover_resources, capture_dropdown]
 
   - name: Notion
     url: "https://www.notion.so"
