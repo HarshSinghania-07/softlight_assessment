@@ -1,7 +1,9 @@
-import os, time
+import os
+import time
+import re
 from loguru import logger
+from playwright.sync_api import Page, TimeoutError as PlaywrightTimeoutError
 from src.state_capturer import StateCapturer
-from playwright.sync_api import Page
 
 
 class WorkflowExecutor:
@@ -17,34 +19,31 @@ class WorkflowExecutor:
         workflow_folder = f"datasets/{app}/{workflow}"
         os.makedirs(workflow_folder, exist_ok=True)
         capturer = StateCapturer(self.page, workflow_folder)
-        base_urls = {"Notion": "https://www.notion.so", "Linear": "https://linear.app"}
-        homepage_url = base_urls.get(app, "https://www.google.com")
-
         step_num = 1
-        logger.info(f"Opening homepage for {app}: {homepage_url}")
-        self.page.goto(homepage_url, timeout=60000)
-        self.page.wait_for_load_state("networkidle")
-        time.sleep(3)
-        capturer.capture(app, f"{step_num:02d}_homepage")
-        step_num += 1
-
         for step in steps:
             try:
                 action = step.get("action", "").upper()
                 url = step.get("url")
                 name = step.get("name", f"step_{step_num:02d}")
-
-                if action == "OPEN" and url != homepage_url:
-                    logger.info(f"Navigating to: {url}")
-                    self.page.goto(url, timeout=60000)
-                    self.page.wait_for_load_state("networkidle")
-                    time.sleep(3)
+                if action == "OPEN" and url:
+                    logger.info(f"Opening URL: {url}")
+                    try:
+                        self.page.goto(url, timeout=120000, wait_until="domcontentloaded")
+                    except PlaywrightTimeoutError:
+                        logger.warning(f"Timeout loading {url}, continuing.")
+                    time.sleep(5)
                     capturer.capture(app, f"{step_num:02d}_{name}")
                     step_num += 1
+                    if any(k in name.lower() for k in ["signup", "register", "get started", "create account"]):
+                        self.navigate_to_auth_page(capturer, app, step_num, intent="signup")
+                        step_num += 1
+                    elif any(k in name.lower() for k in ["login", "log in", "sign in"]):
+                        self.navigate_to_auth_page(capturer, app, step_num, intent="login")
+                        step_num += 1
 
                 elif action == "WAIT":
                     delay = step.get("seconds", 2)
-                    logger.info(f"Waiting for {delay} seconds...")
+                    logger.info(f"Waiting {delay} seconds...")
                     time.sleep(delay)
 
                 elif action == "CAPTURE":
@@ -57,3 +56,38 @@ class WorkflowExecutor:
 
         capturer.save_metadata(app, workflow)
         logger.info(f"Workflow completed for {app}: {workflow}")
+
+    def navigate_to_auth_page(self, capturer, app, step_num, intent="signup"):
+        """Dynamic detection of signup/login modals and navigation."""
+        logger.info(f"Attempting to detect {intent} page for {app}...")
+
+        keywords = ["sign up", "get started", "create account", "register"] if intent == "signup" else ["log in", "sign in"]
+        selectors = [f"text={k}" for k in keywords]
+
+        for sel in selectors:
+            try:
+                el = self.page.wait_for_selector(sel, timeout=8000, state="visible")
+                if el:
+                    logger.info(f"Found {intent} element: {sel}")
+                    el.click()
+                    time.sleep(6)
+                    capturer.capture(app, f"{step_num:02d}_{intent}_page")
+                    return
+            except Exception:
+                continue
+
+        try:
+            links = self.page.query_selector_all("a")
+            for link in links:
+                href = link.get_attribute("href") or ""
+                if href and re.search(r"sign.?up|login|register", href, re.IGNORECASE):
+                    full_url = href if href.startswith("http") else f"https://{app.lower()}.app{href}"
+                    logger.info(f"Navigating to {intent} link: {full_url}")
+                    self.page.goto(full_url, timeout=90000, wait_until="domcontentloaded")
+                    time.sleep(5)
+                    capturer.capture(app, f"{step_num:02d}_{intent}_page")
+                    return
+        except Exception as e:
+            logger.warning(f"No clickable {intent} links found: {e}")
+        logger.warning(f"Could not locate a {intent} element for {app}. Capturing current page as fallback.")
+        capturer.capture(app, f"{step_num:02d}_{intent}_fallback")
