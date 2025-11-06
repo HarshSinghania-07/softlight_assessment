@@ -1,0 +1,14 @@
+[
+ {
+  "step": "initial_load",
+  "description": "Opened https://www.notion.so",
+  "timestamp": "20251104_133200",
+  "file_path": "datasets/Notion/simulate_signup_flow/initial_load_20251104_133200.png"
+ },
+ {
+  "step": "capture_form_state",
+  "description": "Captured UI for capture_form_state",
+  "timestamp": "20251104_133235",
+  "file_path": "datasets/Notion/simulate_signup_flow/capture_form_state_20251104_133235.png"
+ }
+]
