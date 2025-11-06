@@ -8,3 +8,4 @@ pyee==13.0.0
 PyYAML==6.0.3
 tqdm==4.67.1
 typing_extensions==4.15.0
+llama-cpp-python==0.3.2
