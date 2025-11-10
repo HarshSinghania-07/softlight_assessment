@@ -1,6 +1,9 @@
-# softlight_assessment
+# Autonomous_UI_State_Capture_System
+Using a local Llama 2 GGUF model via llama-cpp-python, the agent dynamically generates a step-by-step workflow plan and controls the browser using Playwright to perform the described actions, capturing UI states and screenshots at each step.
 
-Take home assessment for Softlight AI Engineer
+The system demonstrates generalization across tasks and applications, aligning with the assessment goal of real-time, agentic behavior
+
+
 
 ## Steps to run this project :
 
@@ -23,7 +26,3 @@ playwright install
 ```
 python main.py
 ```
-
-Using a local Llama 2 GGUF model via llama-cpp-python, the agent dynamically generates a step-by-step workflow plan and controls the browser using Playwright to perform the described actions, capturing UI states and screenshots at each step.
-
-The system demonstrates generalization across tasks and applications, aligning with the assessment goal of real-time, agentic behavior
